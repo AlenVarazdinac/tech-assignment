@@ -1,4 +1,4 @@
-import darkThemeCSS from 'virtual:nord-dark-theme'
+import darkThemeCSS from '@nordhealth/themes/lib/vet-dark.css?raw'
 
 function applyTheme (dark: boolean) {
   const existing = document.getElementById('n-theme-dark')
