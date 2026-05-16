@@ -5,6 +5,7 @@ import '@nordhealth/components/lib/Icon'
 import '@nordhealth/components/lib/Checkbox'
 import '@nordhealth/components/lib/Card'
 import '@nordhealth/components/lib/Banner'
+import '@nordhealth/components/lib/Stack'
 
 useHead({ title: 'Create an account' })
 
@@ -12,6 +13,8 @@ const showPassword = ref(false)
 const { signIn } = useAuth()
 
 const emailInputRef = useTemplateRef<HTMLElement>('emailInput')
+const passwordInputRef = useTemplateRef<HTMLElement>('passwordInput')
+
 watch(emailInputRef, async (el) => {
   if (!el) return
   await customElements.whenDefined('nord-input')
@@ -25,6 +28,7 @@ const {
   touched,
   errors,
   passwordRequirements,
+  isValid,
   isSubmitting,
   submitError,
   submit
@@ -47,6 +51,14 @@ const onSignUp = async () => {
   if (success) {
     signIn(email.value, receiveUpdates.value)
     navigateTo('/success')
+    return
+  }
+
+  // If the form is not valid, focus the first invalid field
+  if (!isValid.value) {
+    await nextTick()
+    if (errors.value.email) emailInputRef.value?.focus()
+    else passwordInputRef.value?.focus()
   }
 }
 </script>
@@ -68,6 +80,7 @@ const onSignUp = async () => {
               <nord-banner
                 v-if="submitError"
                 variant="danger"
+                role="alert"
               >
                 {{ submitError }}
               </nord-banner>
@@ -77,6 +90,7 @@ const onSignUp = async () => {
                 label="Email"
                 :value="email"
                 type="email"
+                autocomplete="email"
                 placeholder="Enter your email"
                 :error="errors.email ?? undefined"
                 expand
@@ -92,9 +106,11 @@ const onSignUp = async () => {
 
               <div class="n:flex n:flex-col n:gap-s">
                 <nord-input
+                  ref="passwordInput"
                   label="Password"
                   :value="password"
                   :type="showPassword ? 'text' : 'password'"
+                  autocomplete="new-password"
                   placeholder="Enter your password"
                   :error="errors.password ?? undefined"
                   expand
@@ -121,6 +137,8 @@ const onSignUp = async () => {
                 <ul
                   v-if="password.length > 0"
                   class="password-requirements n:flex n:flex-col n:gap-xs"
+                  aria-label="Password requirements"
+                  aria-live="polite"
                 >
                   <li
                     v-for="req in passwordRequirements"
