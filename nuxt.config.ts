@@ -1,13 +1,11 @@
 import tailwindcss from '@tailwindcss/vite'
 
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   modules: ['@nuxt/eslint'],
   devtools: { enabled: true },
   css: [
     '~/assets/css/main.css',
-    '@nordhealth/themes/lib/vet.css',
-    '@nordhealth/themes/lib/vet-dark.css'
+    '@nordhealth/themes/lib/vet.css'
   ],
   vue: {
     compilerOptions: {
