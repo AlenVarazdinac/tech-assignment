@@ -11,6 +11,7 @@ const { isDark, toggle } = useColorScheme()
 
     <div class="theme-toggle">
       <nord-button
+        type="button"
         :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
         @click="toggle"
       >
