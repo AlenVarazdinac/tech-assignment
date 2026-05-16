@@ -24,6 +24,7 @@ const {
   receiveUpdates,
   touched,
   errors,
+  passwordRequirements,
   isSubmitting,
   submitError,
   submit
@@ -89,33 +90,52 @@ const onSignUp = async () => {
                 />
               </nord-input>
 
-              <nord-input
-                label="Password"
-                :value="password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="Enter your password"
-                :error="errors.password ?? undefined"
-                hint="Minimum 8 characters"
-                expand
-                required
-                @input="onPasswordInput"
-                @blur="touched.password = true"
-              >
-                <nord-icon
-                  slot="start"
-                  name="interface-lock"
-                />
-                <nord-button
-                  slot="end"
-                  type="button"
-                  :aria-label="showPassword ? 'Hide password' : 'Show password'"
-                  @click="showPassword = !showPassword"
+              <div class="n:flex n:flex-col n:gap-s">
+                <nord-input
+                  label="Password"
+                  :value="password"
+                  :type="showPassword ? 'text' : 'password'"
+                  placeholder="Enter your password"
+                  :error="errors.password ?? undefined"
+                  expand
+                  required
+                  @input="onPasswordInput"
+                  @blur="touched.password = true"
                 >
                   <nord-icon
-                    :name="showPassword ? 'interface-edit-off' : 'interface-edit-on'"
+                    slot="start"
+                    name="interface-lock"
                   />
-                </nord-button>
-              </nord-input>
+                  <nord-button
+                    slot="end"
+                    type="button"
+                    :aria-label="showPassword ? 'Hide password' : 'Show password'"
+                    @click="showPassword = !showPassword"
+                  >
+                    <nord-icon
+                      :name="showPassword ? 'interface-edit-off' : 'interface-edit-on'"
+                    />
+                  </nord-button>
+                </nord-input>
+
+                <ul
+                  v-if="password.length > 0"
+                  class="password-requirements n:flex n:flex-col n:gap-xs"
+                >
+                  <li
+                    v-for="req in passwordRequirements"
+                    :key="req.label"
+                    class="n:flex n:items-center n:gap-xs n:text-body-s"
+                    :class="req.met ? 'requirement--met' : 'requirement--unmet'"
+                  >
+                    <nord-icon
+                      :name="req.met ? 'interface-checked' : 'interface-close'"
+                      size="s"
+                    />
+                    {{ req.label }}
+                  </li>
+                </ul>
+              </div>
 
               <nord-checkbox
                 label="Receive occasional product updates and announcements"
@@ -127,6 +147,7 @@ const onSignUp = async () => {
 
             <nord-button
               slot="footer"
+              type="submit"
               variant="primary"
               expand
               :loading="isSubmitting"
@@ -139,3 +160,19 @@ const onSignUp = async () => {
     </ClientOnly>
   </div>
 </template>
+
+<style scoped>
+.password-requirements {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.requirement--met {
+  color: var(--n-color-status-success);
+}
+
+.requirement--unmet {
+  color: var(--n-color-text-weaker);
+}
+</style>
