@@ -27,10 +27,11 @@ function validatePassword (value: string): string | null {
 export function useSignUpForm () {
   const email = ref('')
   const password = ref('')
-  const receiveUpdates = ref(false)
+  const receiveUpdates = ref(false) // False by default because GDPR compliance
 
   const touched = reactive({ email: false, password: false })
   const isSubmitting = ref(false)
+  const submitError = ref<string | null>(null)
 
   const errors = computed<FieldErrors>(() => ({
     email: validateEmail(email.value),
@@ -54,10 +55,15 @@ export function useSignUpForm () {
     if (!isValid.value) return false
 
     isSubmitting.value = true
+    submitError.value = null
     try {
       // Simulate async submission — replace with real API call
       await new Promise(resolve => setTimeout(resolve, 600))
       return true
+    }
+    catch {
+      submitError.value = 'Something went wrong. Please try again.'
+      return false
     }
     finally {
       isSubmitting.value = false
@@ -72,6 +78,7 @@ export function useSignUpForm () {
     errors: visibleErrors,
     isValid,
     isSubmitting,
+    submitError,
     submit
   }
 }
