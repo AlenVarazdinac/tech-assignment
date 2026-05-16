@@ -1,11 +1,17 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { useSignUpForm } from '~/composables/useSignUpForm'
 
 const setup = () => useSignUpForm()
 
 describe('useSignUpForm', () => {
+  // Use fake timers for testing
   beforeEach(() => {
     vi.useFakeTimers()
+  })
+
+  // Restore real timers after each test
+  afterEach(() => {
+    vi.useRealTimers()
   })
 
   describe('initial state', () => {

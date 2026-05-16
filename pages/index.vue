@@ -15,11 +15,10 @@ const { signIn } = useAuth()
 const emailInputRef = useTemplateRef<HTMLElement>('emailInput')
 const passwordInputRef = useTemplateRef<HTMLElement>('passwordInput')
 
-watch(emailInputRef, async (el) => {
-  if (!el) return
+onMounted(async () => {
   await customElements.whenDefined('nord-input')
-  el.focus()
-}, { once: true })
+  emailInputRef.value?.focus()
+})
 
 const {
   email,

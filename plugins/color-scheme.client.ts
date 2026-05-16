@@ -18,10 +18,11 @@ export default defineNuxtPlugin(() => {
   // Keeps related keys grouped and avoids localStorage collisions.
   const isDark = useState('color-scheme:dark', () => false)
 
-  // Default to system preference, then override with user's stored choice if it exists
-  isDark.value = window.matchMedia('(prefers-color-scheme: dark)').matches
+  // Prefer the user's stored choice; fall back to system preference on first visit
   const stored = localStorage.getItem('color-scheme:dark')
-  if (stored !== null) isDark.value = stored === 'true'
+  isDark.value = stored !== null
+    ? stored === 'true'
+    : window.matchMedia('(prefers-color-scheme: dark)').matches
 
   applyTheme(isDark.value)
   watch(isDark, (val) => {
