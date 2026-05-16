@@ -5,10 +5,20 @@ import '@nordhealth/components/lib/Icon'
 import '@nordhealth/components/lib/Checkbox'
 import '@nordhealth/components/lib/Card'
 
-const email = ref('')
-const password = ref('')
+useHead({ title: 'Create an account' })
+
 const showPassword = ref(false)
-const receiveUpdates = ref(false) // Default to false due to GDPR
+const { signIn } = useAuth()
+
+const {
+  email,
+  password,
+  receiveUpdates,
+  touched,
+  errors,
+  isSubmitting,
+  submit
+} = useSignUpForm()
 
 const onEmailInput = (e: Event) => {
   email.value = (e.target as HTMLInputElement).value
@@ -18,12 +28,16 @@ const onPasswordInput = (e: Event) => {
   password.value = (e.target as HTMLInputElement).value
 }
 
-const onReceiveUpdatesInput = (e: Event) => {
+const onReceiveUpdatesChange = (e: Event) => {
   receiveUpdates.value = (e.target as HTMLInputElement).checked
 }
 
-const onSignUp = () => {
-  console.log('Sign Up', email.value, password.value, receiveUpdates.value)
+const onSignUp = async () => {
+  const success = await submit()
+  if (success) {
+    signIn(email.value, receiveUpdates.value)
+    navigateTo('/success')
+  }
 }
 </script>
 
@@ -45,9 +59,11 @@ const onSignUp = () => {
               :value="email"
               type="email"
               placeholder="Enter your email"
+              :error="errors.email ?? undefined"
               expand
               required
               @input="onEmailInput"
+              @blur="touched.email = true"
             >
               <nord-icon
                 slot="start"
@@ -60,9 +76,12 @@ const onSignUp = () => {
               :value="password"
               :type="showPassword ? 'text' : 'password'"
               placeholder="Enter your password"
+              :error="errors.password ?? undefined"
+              hint="Minimum 8 characters"
               expand
               required
               @input="onPasswordInput"
+              @blur="touched.password = true"
             >
               <nord-icon
                 slot="start"
@@ -71,6 +90,7 @@ const onSignUp = () => {
               <nord-button
                 slot="end"
                 type="button"
+                :aria-label="showPassword ? 'Hide password' : 'Show password'"
                 @click="showPassword = !showPassword"
               >
                 <nord-icon
@@ -83,7 +103,7 @@ const onSignUp = () => {
               label="Receive occasional product updates and announcements"
               :checked="receiveUpdates"
               size="s"
-              @change="onReceiveUpdatesInput"
+              @change="onReceiveUpdatesChange"
             />
           </div>
 
@@ -91,6 +111,7 @@ const onSignUp = () => {
             slot="footer"
             variant="primary"
             expand
+            :loading="isSubmitting"
             @click="onSignUp"
           >
             Sign Up
