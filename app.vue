@@ -15,7 +15,14 @@ const { isDark, toggle } = useColorScheme()
         :aria-label="isDark ? 'Switch to light mode' : 'Switch to dark mode'"
         @click="toggle"
       >
-        <nord-icon :name="isDark ? 'interface-mode-light' : 'interface-mode-dark'" />
+        <nord-icon
+          v-if="isDark"
+          name="interface-mode-light"
+        />
+        <nord-icon
+          v-else
+          name="interface-mode-dark"
+        />
       </nord-button>
     </div>
 

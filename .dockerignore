@@ -1,0 +1,12 @@
+.nuxt
+.output
+node_modules
+.git
+*.log
+test-results
+playwright-report
+e2e
+tests
+Dockerfile
+.dockerignore
+README.md

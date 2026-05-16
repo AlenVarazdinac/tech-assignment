@@ -1,3 +1,18 @@
+import darkThemeCSS from 'virtual:nord-dark-theme'
+
+function applyTheme (dark: boolean) {
+  const existing = document.getElementById('n-theme-dark')
+  if (dark && !existing) {
+    const style = document.createElement('style')
+    style.id = 'n-theme-dark'
+    style.innerHTML = darkThemeCSS
+    document.head.appendChild(style)
+  }
+  else if (!dark && existing) {
+    existing.remove()
+  }
+}
+
 export default defineNuxtPlugin(() => {
   // Key uses colon-namespacing (color-scheme:dark, color-scheme:contrast, color-scheme:preference...)
   // Keeps related keys grouped and avoids localStorage collisions.
@@ -8,5 +23,9 @@ export default defineNuxtPlugin(() => {
   const stored = localStorage.getItem('color-scheme:dark')
   if (stored !== null) isDark.value = stored === 'true'
 
-  watch(isDark, val => localStorage.setItem('color-scheme:dark', String(val)))
+  applyTheme(isDark.value)
+  watch(isDark, (val) => {
+    applyTheme(val)
+    localStorage.setItem('color-scheme:dark', String(val))
+  })
 })
