@@ -24,8 +24,8 @@ A client-side sign-up form built with **Nuxt 3**, the **Nordhealth VET design sy
 
 ## Requirements
 
-- [Node.js](https://nodejs.org/) v22+
-- npm v10+ (bundled with Node 22)
+- [Node.js](https://nodejs.org/) v20+
+- npm v10+ (bundled with Node 20+)
 
 ## Getting started
 
