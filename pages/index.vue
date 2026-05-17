@@ -76,7 +76,7 @@ const onSignUp = async () => {
 
           <div class="n:flex n:flex-col n:gap-l">
             <nord-banner
-              v-if="submitError"
+              v-show="submitError"
               variant="danger"
               role="alert"
             >

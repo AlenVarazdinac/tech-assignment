@@ -9,10 +9,15 @@ const passwordInput = (page: Page) =>
 const submitButton = (page: Page) =>
   page.getByRole('button', { name: 'Sign Up' })
 
+const newsletterCheckbox = (page: Page) =>
+  page.locator('nord-checkbox[label="Receive occasional product updates and announcements"]').locator('input')
+
+const passwordRequirement = (page: Page, label: string) =>
+  page.locator('.password-requirements li', { hasText: label })
+
 test.describe('Sign-up page', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/')
-    // Wait for ClientOnly content to hydrate
     await page.waitForSelector('nord-card', { state: 'visible' })
   })
 
@@ -21,7 +26,7 @@ test.describe('Sign-up page', () => {
     await expect(page.locator('h2', { hasText: 'Create an account' })).toBeVisible()
     await expect(page.locator('nord-input[label="Email"]')).toBeVisible()
     await expect(page.locator('nord-input[label="Password"]')).toBeVisible()
-    await expect(page.locator('nord-checkbox')).toBeVisible()
+    await expect(page.locator('nord-checkbox[label="Receive occasional product updates and announcements"]')).toBeVisible()
     await expect(submitButton(page)).toBeVisible()
   })
 
@@ -59,16 +64,22 @@ test.describe('Sign-up page', () => {
   test('marks all requirements as met for a strong password', async ({ page }) => {
     await passwordInput(page).fill('ValidPass1!')
 
-    await expect(page.locator('.requirement--met')).toHaveCount(5)
+    await expect(passwordRequirement(page, 'At least 8 characters')).toHaveClass(/requirement--met/)
+    await expect(passwordRequirement(page, 'At least one uppercase letter')).toHaveClass(/requirement--met/)
+    await expect(passwordRequirement(page, 'At least one lowercase letter')).toHaveClass(/requirement--met/)
+    await expect(passwordRequirement(page, 'At least one number')).toHaveClass(/requirement--met/)
+    await expect(passwordRequirement(page, 'At least one special character')).toHaveClass(/requirement--met/)
   })
 
   test('shows partial requirements as met while password is incomplete', async ({ page }) => {
-    // 'Hello' satisfies: length >= 8? No. uppercase? Yes. lowercase? Yes. number? No. special? No.
-    // So exactly 2 met out of 5.
+    // 'Hello' satisfies uppercase and lowercase only
     await passwordInput(page).fill('Hello')
 
-    await expect(page.locator('.requirement--met')).toHaveCount(2)
-    await expect(page.locator('.requirement--unmet')).toHaveCount(3)
+    await expect(passwordRequirement(page, 'At least one uppercase letter')).toHaveClass(/requirement--met/)
+    await expect(passwordRequirement(page, 'At least one lowercase letter')).toHaveClass(/requirement--met/)
+    await expect(passwordRequirement(page, 'At least 8 characters')).toHaveClass(/requirement--unmet/)
+    await expect(passwordRequirement(page, 'At least one number')).toHaveClass(/requirement--unmet/)
+    await expect(passwordRequirement(page, 'At least one special character')).toHaveClass(/requirement--unmet/)
   })
 
   test('toggles password visibility', async ({ page }) => {
@@ -104,7 +115,7 @@ test.describe('Sign-up page', () => {
     await emailInput(page).fill('user@example.com')
     await passwordInput(page).fill('ValidPass1!')
 
-    await page.locator('nord-checkbox').locator('input[type="checkbox"]').check()
+    await newsletterCheckbox(page).check()
 
     await submitButton(page).click()
 
@@ -121,10 +132,8 @@ test.describe('Sign-up page', () => {
   })
 
   test('focuses first invalid field after failed submit', async ({ page }) => {
-    // Submit with both fields empty so that email should receive focus
     await submitButton(page).click()
 
-    // Verify that the focused element is the nord-input for "Email"
     const focused = await page.evaluate(() => ({
       tag: document.activeElement?.tagName.toLowerCase(),
       label: document.activeElement?.getAttribute('label')

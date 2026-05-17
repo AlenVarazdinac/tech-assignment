@@ -84,4 +84,4 @@ docker build -t nordhealth-assignment .
 docker run -p 3000:3000 nordhealth-assignment
 ```
 
-The image uses a multi-stage build: dependencies and source are compiled in a `build` stage, and only the `.output` directory is copied into the lean `runtime` stage. Final image size is roughly 180 MB.
+The image uses a multi-stage build: dependencies and source are compiled in a `build` stage, and only the `.output` directory is copied into the lean `runtime` stage. Final image size is roughly 200-250 MB.
