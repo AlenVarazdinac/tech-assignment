@@ -1,3 +1,5 @@
+// useState is sufficient here - it deduplicates across composable calls without a separate store layer.
+// Pinia would be the right call once multiple feature areas need shared state or DevTools inspection.
 export function useAuth () {
   const user = useState<AuthUser | null>('auth:user', () => null)
 

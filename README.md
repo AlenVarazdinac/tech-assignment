@@ -1,75 +1,71 @@
-# Nuxt Minimal Starter
+# Nordhealth Sign-Up Assignment
 
-Look at the [Nuxt documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+A client-side sign-up form built with **Nuxt 3**, the **Nordhealth VET design system**, and **TypeScript**.
 
-## Setup
+## Features
 
-Make sure to install dependencies:
+- Sign-up form with real-time validation (email format, password strength)
+- Password visibility toggle and live requirements checklist
+- Dark/light theme toggle with system preference detection and localStorage persistence
+- Accessible: `aria-live` regions, `autocomplete` attributes, keyboard navigation, focus management on errors
+- Protected `/success` route via global Nuxt route middleware
+- Unit tests (Vitest) and E2E tests (Playwright)
+
+## Stack
+
+| Concern | Choice |
+|---|---|
+| Framework | Nuxt 3 (SPA, `ssr: false`) |
+| Design system | @nordhealth/components, VET theme |
+| Styling | Nordhealth CSS + Tailwind CSS v4 |
+| State | Vue `useState` |
+| Testing | Vitest + @nuxt/test-utils, Playwright |
+| Deployment | Docker (multi-stage) |
+
+## Getting started
 
 ```bash
-# npm
 npm install
-
-# pnpm
-pnpm install
-
-# yarn
-yarn install
-
-# bun
-bun install
+npm run dev       # http://localhost:3000
 ```
 
-## Development Server
-
-Start the development server on `http://localhost:3000`:
+## Scripts
 
 ```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
+npm run build            # Production build
+npm test                 # All tests (unit + E2E), single run - use this in CI
+npm run test:unit        # Unit tests only (single run)
+npm run test:unit:watch  # Unit tests in watch mode
+npm run test:e2e         # E2E tests only (starts dev server automatically)
+npm run test:e2e:ui      # E2E tests with Playwright UI
+npm run lint             # ESLint
+npm run lint:fix         # ESLint with auto-fix
 ```
 
-## Production
+## Architecture decisions
 
-Build the application for production:
+**SPA mode (`ssr: false`)** - Required by the assignment. Nuxt renders a single HTML shell; everything runs in the browser. This simplifies the theme switching and plugin setup (single Vite build, no hydration concerns). Note: requires `experimental: { viteEnvironmentApi: true }` as a workaround for a [known Nuxt issue](https://github.com/nuxt/nuxt/issues/34957) affecting SPA mode dev server startup.
+
+**No validation library** - The form has two fields with straightforward rules. A custom composable (`useSignUpForm`) is sufficient and avoids the bundle overhead and framework indirection of Vuelidate or VeeValidate. If the form grows (async server checks, cross-field rules, many fields), migrating to a dedicated library at that point would be the right call.
+
+**No Pinia** - `useState` provides reactive state with auto-deduplication across composables. A separate store layer adds indirection without benefit at this scale. Pinia would be the right choice once the app has multiple feature areas sharing state or needs DevTools inspection.
+
+**Theme switching via CSS injection** - Both `vet.css` and `vet-dark.css` target `:root`. Loading both in `nuxt.config` means dark always wins. The solution: import `vet-dark.css` as a raw string (`?raw`), then dynamically inject it as a `<style>` tag via `document.createElement` only when dark mode is active. Since the injected tag comes after the bundled CSS in the document, the cascade works correctly. `@nuxtjs/color-mode` doesn't work here because it operates on class toggling, not stylesheet injection.
+
+**Colon-namespaced keys** (`color-scheme:dark`, `auth:user`) - Groups related keys in `localStorage`/`useState` and avoids collisions with third-party code.
+
+**Shared types in `types/index.ts`** - Nuxt automatically includes the `types/` directory in TypeScript compilation. All shared interfaces (`AuthUser`, `SignUpFormData`, `FieldErrors`, `PasswordRequirement`) live there and are imported explicitly where needed. `interface` is used for object shapes (marginally faster TypeScript compilation due to caching); `type` would be the choice for unions, primitives, or mapped types.
+
+**Pre-commit hook with lint-staged** - `simple-git-hooks` runs `lint-staged` on every commit, which runs ESLint (with auto-fix) only on staged `.ts`, `.vue`, and `.js` files. Fast (<1s), focused on what's actually being committed.
+
+## Docker
 
 ```bash
-# npm
-npm run build
+# Build
+docker build -t nordhealth-assignment .
 
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
+# Run
+docker run -p 3000:3000 nordhealth-assignment
 ```
 
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+The image uses a multi-stage build: dependencies and source are compiled in a `build` stage, and only the `.output` directory is copied into the lean `runtime` stage. Final image size is roughly 180 MB.
