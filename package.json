@@ -7,7 +7,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "nuxt prepare && npx simple-git-hooks",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "test": "vitest run && playwright test",
@@ -31,9 +31,18 @@
     "vue": "^3.5.34",
     "vue-router": "^5.0.6"
   },
+  "simple-git-hooks": {
+    "pre-commit": "npx lint-staged"
+  },
+  "lint-staged": {
+    "*.{ts,vue,js}": "eslint --fix"
+  },
   "devDependencies": {
     "@nuxt/test-utils": "^3.19.1",
     "@playwright/test": "^1.60.0",
+    "happy-dom": "^17.6.3",
+    "lint-staged": "^17.0.5",
+    "simple-git-hooks": "^2.13.1",
     "vitest": "^3.2.4"
   }
 }

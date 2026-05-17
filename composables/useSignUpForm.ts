@@ -4,22 +4,6 @@
 // If the form grows (async server-side checks, cross-field rules, many fields), migrating to a
 // dedicated library at that point would be the right call.
 
-export interface SignUpFormData {
-  email: string
-  password: string
-  receiveUpdates: boolean
-}
-
-export interface FieldErrors {
-  email: string | null
-  password: string | null
-}
-
-export interface PasswordRequirement {
-  label: string
-  met: boolean
-}
-
 const EMAIL_REGEX = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
 const PASSWORD_RULES: Array<{ label: string, test: (v: string) => boolean }> = [

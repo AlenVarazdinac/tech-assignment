@@ -1,8 +1,3 @@
-export interface AuthUser {
-  email: string
-  receiveUpdates: boolean
-}
-
 export function useAuth () {
   const user = useState<AuthUser | null>('auth:user', () => null)
 
