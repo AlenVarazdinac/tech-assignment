@@ -54,7 +54,7 @@ npm run lint:fix         # ESLint with auto-fix
 
 **Colon-namespaced keys** (`color-scheme:dark`, `auth:user`) - Groups related keys in `localStorage`/`useState` and avoids collisions with third-party code.
 
-**Shared types in `types/index.ts`** - Nuxt automatically includes the `types/` directory in TypeScript compilation. All shared interfaces (`AuthUser`, `SignUpFormData`, `FieldErrors`, `PasswordRequirement`) live there and are imported explicitly where needed. `interface` is used for object shapes (marginally faster TypeScript compilation due to caching); `type` would be the choice for unions, primitives, or mapped types.
+**Shared types in `types/index.ts`** - All shared interfaces (`AuthUser`, `FieldErrors`, `PasswordRequirement`) live in `types/index.ts`. With `imports: { dirs: ['types'] }` in `nuxt.config.ts`, Nuxt generates global type declarations from that directory - no explicit imports needed in composables or pages. `interface` is used for object shapes (marginally faster TypeScript compilation due to caching); `type` would be the choice for unions, primitives, or mapped types.
 
 **Pre-commit hook with lint-staged** - `simple-git-hooks` runs `lint-staged` on every commit, which runs ESLint (with auto-fix) only on staged `.ts`, `.vue`, and `.js` files. Fast (<1s), focused on what's actually being committed.
 

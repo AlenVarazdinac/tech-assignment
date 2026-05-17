@@ -65,7 +65,7 @@ export function useSignUpForm () {
     submitError.value = null
     try {
       // Simulate async submission — replace with real API call
-      await new Promise(resolve => setTimeout(resolve, 600))
+      await new Promise<void>(resolve => setTimeout(resolve, 600))
       return true
     }
     catch {

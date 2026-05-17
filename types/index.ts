@@ -3,12 +3,6 @@ export interface AuthUser {
   receiveUpdates: boolean
 }
 
-export interface SignUpFormData {
-  email: string
-  password: string
-  receiveUpdates: boolean
-}
-
 export interface FieldErrors {
   email: string | null
   password: string | null
