@@ -52,6 +52,11 @@ export function useSignUpForm () {
 
   const isValid = computed(() => !errors.value.email && !errors.value.password)
 
+  // Replace with a real API call when the backend is available
+  async function submitSignUp (_email: string, _password: string, _receiveUpdates: boolean): Promise<void> {
+    await new Promise<void>(resolve => setTimeout(resolve, 600))
+  }
+
   function touchAll () {
     touched.email = true
     touched.password = true
@@ -64,8 +69,7 @@ export function useSignUpForm () {
     isSubmitting.value = true
     submitError.value = null
     try {
-      // Simulate async submission — replace with real API call
-      await new Promise<void>(resolve => setTimeout(resolve, 600))
+      await submitSignUp(email.value, password.value, receiveUpdates.value)
       return true
     }
     catch {
