@@ -58,6 +58,17 @@ npm run lint:fix         # ESLint with auto-fix
 
 **Pre-commit hook with lint-staged** - `simple-git-hooks` runs `lint-staged` on every commit, which runs ESLint (with auto-fix) only on staged `.ts`, `.vue`, and `.js` files. Fast (<1s), focused on what's actually being committed.
 
+## CI
+
+GitHub Actions runs on every push and pull request to `main` (`.github/workflows/ci.yml`):
+
+1. Install dependencies (`npm ci`)
+2. Unit tests
+3. Install Playwright + Chromium
+4. E2E tests (dev server starts automatically via `webServer` in `playwright.config.ts`)
+
+If E2E tests fail, the Playwright HTML report is uploaded as an artifact and available for download from the Actions tab for 7 days.
+
 ## Docker
 
 ```bash
