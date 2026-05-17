@@ -22,6 +22,11 @@ A client-side sign-up form built with **Nuxt 3**, the **Nordhealth VET design sy
 | Testing | Vitest + @nuxt/test-utils, Playwright |
 | Deployment | Docker (multi-stage) |
 
+## Requirements
+
+- [Node.js](https://nodejs.org/) v22+
+- npm v10+ (bundled with Node 22)
+
 ## Getting started
 
 ```bash
