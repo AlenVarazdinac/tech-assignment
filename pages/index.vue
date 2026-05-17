@@ -13,7 +13,6 @@ const showPassword = ref(false)
 const { signIn } = useAuth()
 
 const emailInputRef = useTemplateRef<HTMLElement>('emailInput')
-const passwordInputRef = useTemplateRef<HTMLElement>('passwordInput')
 
 onMounted(async () => {
   await customElements.whenDefined('nord-input')
@@ -50,14 +49,6 @@ const onSignUp = async () => {
   if (success) {
     signIn(email.value, receiveUpdates.value)
     navigateTo('/success')
-    return
-  }
-
-  // If the form is not valid, focus the first invalid field
-  if (!isValid.value) {
-    await nextTick()
-    if (errors.value.email) emailInputRef.value?.focus()
-    else passwordInputRef.value?.focus()
   }
 }
 </script>
@@ -104,7 +95,6 @@ const onSignUp = async () => {
 
             <div class="n:flex n:flex-col n:gap-s">
               <nord-input
-                ref="passwordInput"
                 label="Password"
                 :value="password"
                 :type="showPassword ? 'text' : 'password'"

@@ -30,8 +30,20 @@ test.describe('Sign-up page', () => {
     await expect(submitButton(page)).toBeVisible()
   })
 
-  test('shows validation errors when submitting empty form', async ({ page }) => {
-    await submitButton(page).click()
+  test('submit button is disabled until form is valid', async ({ page }) => {
+    await expect(submitButton(page)).toBeDisabled()
+
+    await emailInput(page).fill('user@example.com')
+    await expect(submitButton(page)).toBeDisabled()
+
+    await passwordInput(page).fill('ValidPass1!')
+    await expect(submitButton(page)).toBeEnabled()
+  })
+
+  test('shows validation errors on empty fields after interaction', async ({ page }) => {
+    await emailInput(page).focus()
+    await page.keyboard.press('Tab')
+    await page.keyboard.press('Tab')
 
     await expect(page.locator('nord-input[label="Email"]')).toHaveAttribute('error', 'Email is required')
     await expect(page.locator('nord-input[label="Password"]')).toHaveAttribute('error', 'Password is required')
@@ -129,26 +141,6 @@ test.describe('Sign-up page', () => {
     await passwordInput(page).press('Enter')
 
     await expect(page).toHaveURL('/success', { timeout: 10000 })
-  })
-
-  test('focuses first invalid field after failed submit', async ({ page }) => {
-    await submitButton(page).click()
-
-    const focused = await page.evaluate(() => ({
-      tag: document.activeElement?.tagName.toLowerCase(),
-      label: document.activeElement?.getAttribute('label')
-    }))
-    expect(focused.tag).toBe('nord-input')
-    expect(focused.label).toBe('Email')
-  })
-
-  test('focuses password field when email is valid but password is invalid', async ({ page }) => {
-    await emailInput(page).fill('user@example.com')
-
-    await submitButton(page).click()
-
-    const focusedType = await page.evaluate(() => (document.activeElement as HTMLInputElement)?.type)
-    expect(focusedType).toBe('password')
   })
 
   test('success page hides subscription message when checkbox is unchecked', async ({ page }) => {
