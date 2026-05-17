@@ -167,6 +167,7 @@ const onSignUp = async () => {
             variant="primary"
             expand
             :loading="isSubmitting"
+            :disabled="!isValid || isSubmitting"
           >
             Sign Up
           </nord-button>
